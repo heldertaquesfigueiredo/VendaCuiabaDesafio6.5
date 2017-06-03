@@ -1,0 +1,73 @@
+<html>
+    <body>
+    <h3>Oi ${pedido.cliente.nome}!</h3>
+    
+        <table>
+        	<tr>
+                <td>Status:</td>
+                <td style='color:green;'>$pedido.status.descricao</td>
+            </tr>
+        
+        	<tr>
+                <td>Vendedor:</td>
+                <td style='color:green;'>$pedido.vendedor.nome</td>
+            </tr>
+        	
+            <tr>
+                <td style="width: 100px">Número:</td>
+                <td>$pedido.id</td>
+            </tr>
+            <tr>
+                <td>Cliente:</td>
+                <td>$pedido.cliente.nome</td>
+            </tr>
+            <tr>
+                <td>Valor total:</td>
+                <td>$numberTool.format("¤ #0.00", $pedido.valorTotal, $locale)</td>
+            </tr>
+        </table>
+        
+        <br/>
+        <table border="1" cellspacing="0" cellpadding="3">
+        	<caption>Lista de Produtos</caption>
+   			<thead style='color: #900;'>
+	            <tr>
+	                <th>Produto</th>
+	                <th>Valor unitário</th>
+	                <th>Quantidade</th>
+	                <th>Valor total</th>
+	            </tr>
+	        </thead>
+            
+            <tfoot style='color: #009;'>
+		      	<tr>
+		      		<td></td>
+		      		<td></td>
+		      		<td>SubTotal</td>
+		      		<td>$numberTool.format("¤ #0.00", $pedido.valorSubtotal, $locale)</td>
+		      	</tr>
+		   	</tfoot>
+            
+		   
+            #foreach ($item in $pedido.itens)
+            	#if ($item.produto.id)
+            	<tbody style='color: #666;'>
+		            <tr>
+		                <td>$item.produto.nome</td>
+		                <td>$numberTool.format("¤ #0.00", $item.produto.valorUnitario, $locale)</td>
+		                <td>$item.quantidade</td>
+		                <td>$numberTool.format("¤ #0.00", $item.valorTotal, $locale)</td>
+		            </tr>
+		        </tbody>
+		        
+		        
+	            #end
+            #end
+            
+        </table>
+        
+        <div>
+            O seu endereço de e-mail é <a href="mailto:${pedido.cliente.email}">${pedido.cliente.email}</a>.
+        </div>
+    </body>
+</html>

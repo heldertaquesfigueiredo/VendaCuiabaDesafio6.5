@@ -1,0 +1,112 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">#{cadastroUsuarioBean.editando ? 'Edição de usuário' : 'Novo usuário'}</ui:define>
+
+	<ui:define name="corpo">
+		<f:metadata>
+			<o:viewParam name="usuario" value="#{cadastroUsuarioBean.usuario}" />
+			<f:viewAction action="#{cadastroUsuarioBean.inicializar}"/>
+		</f:metadata>
+
+		<h:form id="frmUsuario">
+			<p:focus context="frmUsuario" />
+
+			<h1>#{cadastroUsuarioBean.editando ? 'Edição de usuário' : 'Novo
+				usuário'}</h1>
+
+			<p:messages autoUpdate="true" closable="true" />
+
+			<p:toolbar style="margin-top: 20px">
+				<p:toolbarGroup>
+					<p:button value="Novo" outcome="/usuarios/CadastroUsuario" />
+					<p:commandButton value="Salvar" id="botaoSalvar"
+						action="#{cadastroUsuarioBean.salvar}" update="frmUsuario" />
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Pesquisa" outcome="/usuarios/PesquisaUsuarios" />
+				</p:toolbarGroup>
+			</p:toolbar>
+
+			<h:panelGrid columns="2" id="painel"
+				style="width: 100%; margin-top: 20px" columnClasses="rotulo,campo">
+				<p:outputLabel value="Nome:" for="nome" />
+				<p:inputText id="nome" size="60" maxlength="80"
+					value="#{cadastroUsuarioBean.usuario.nome}" />
+
+				<p:outputLabel value="E-mail:" for="email" />
+				<p:inputText id="email" size="60" maxlength="80"
+					value="#{cadastroUsuarioBean.usuario.email}" />
+
+				<p:outputLabel value="Senha" for="senha" />
+
+				<p:password id="senha" size="30" maxlength="20"
+					promptLabel="Por favor, digite sua senha" feedback="true"
+					weakLabel="Senha fraca" goodLabel="Boa" strongLabel="Forte"
+					value="#{cadastroUsuarioBean.usuario.senha}" redisplay="true" />
+
+
+
+
+
+				<p:selectOneMenu style="margin-top: 40px; width:140px" id="grupo"
+					value="#{cadastroUsuarioBean.grupo}">
+					<f:selectItem itemLabel="Selecione a grupo"
+						noSelectionOption="true" />
+					<f:selectItems value="#{cadastroUsuarioBean.gruposRaizes}"
+						var="grupo" itemValue="#{grupo}" itemLabel="#{grupo.nome}" />
+				</p:selectOneMenu>
+
+				<p:commandButton value="Adicionar ao grupo"
+					style="margin-top: 40px; width:160px; margin-left: 5px"
+					action="#{cadastroUsuarioBean.adicionarGrupo}"
+					process="@this grupo" update="grupoTable" />
+
+
+			</h:panelGrid>
+
+
+
+			<p:dataTable id="grupoTable" var="grupo"
+				value="#{cadastroUsuarioBean.usuario.grupos}"
+				style="margin-top: 5px" emptyMessage="Nenhum pedido encontrado."
+				rows="20" paginator="true" paginatorAlwaysVisible="false"
+				paginatorPosition="bottom">
+
+				<p:column headerText="Grupo" style="text-align: left; width: 100%">
+					<h:outputText value="#{grupo.nome}" />
+
+				</p:column>
+
+				<p:column style="text-align: center; width: 100px">
+					<p:commandButton icon="ui-icon-trash" title="Excluir"
+						oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":frmUsuario:confirmacaoExclusaoDialog">
+						<f:setPropertyActionListener target="#{cadastroUsuarioBean.grupo}"
+							value="#{grupo}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<!--Dialog de Confirmação  -->
+
+			<p:confirmDialog header="Exclusão de grupo"
+				message="Tem certeza que deseja excluir o grupo #{cadastroUsuarioBean.grupo.nome}?"
+				severity="alert" widgetVar="confirmacaoExclusao"
+				id="confirmacaoExclusaoDialog">
+				<p:button value="Não"
+					onclick="PF('confirmacaoExclusao').hide(); return false;" />
+				<p:commandButton value="Sim"
+					action="#{cadastroUsuarioBean.removerGrupo}"
+					update=":frmUsuario:grupoTable"
+					oncomplete="PF('confirmacaoExclusao').hide();" process="@this" />
+			</p:confirmDialog>
+
+			<!--Dialog de Confirmação fim -->
+		</h:form>
+	</ui:define>
+</ui:composition>

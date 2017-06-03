@@ -1,0 +1,107 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    
+
+    <ui:define name="titulo">Pesquisa de clientes</ui:define>
+    
+    
+        
+    <ui:define name="corpo">
+    
+    	<h:form id="frmPesquisa">
+    		<p:focus context="frmPesquisa"/>
+    	
+	    	<h1>Pesquisa de clientes</h1>
+	    	
+	    	<p:growl autoUpdate="true"/>
+	    	
+	    	<p:toolbar style="margin-top: 20px">
+	    		<p:toolbarGroup>
+	    			<p:commandButton value="Pesquisar" action="#{pesquisaClientesBean.pesquisar}"
+	    				update="@form" />
+	    		</p:toolbarGroup>
+	    		<p:toolbarGroup align="right">
+	    			<p:button value="Novo" outcome="/clientes/CadastroCliente"/>
+	    		</p:toolbarGroup>
+	    	</p:toolbar>
+	    	
+	    	<p:panelGrid columns="2" id="painel" style="width: 100%; margin-top: 20px"
+	    			columnClasses="rotulo, campo">
+	    		    		
+	    		
+	    		<p:outputLabel value="CPF/CNPJ" />
+				<p:inputText size="" value="#{pesquisaClientesBean.filtro.documentoReceitaFederal}"/>	    
+						
+	    		<p:outputLabel value="Nome" />
+	    		<p:inputText size="80" value="#{pesquisaClientesBean.filtro.nome}"/>
+	    		
+	    		
+	    	</p:panelGrid>
+	    	
+	    	<p:dataTable id="clientesTable" value="#{pesquisaClientesBean.clientesFiltrados}" var="cliente"
+	    		style="margin-top: 20px" emptyMessage="Nenhum pedido encontrado."
+	    		rows="5" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+	    		
+	    		<p:column headerText="Nome" style="text-align: left;" >
+	    			<h:outputText value="#{cliente.nome}"/>
+	    			
+	    		</p:column>
+	    		
+	    		<p:column headerText="Tipo">
+	    			<h:outputText value="#{cliente.tipo}"/>
+	    			
+	    		</p:column>
+	    		<p:column headerText="CPF/CPNJ">
+	    			<h:outputText value="#{cliente.documentoReceitaFederal}"/>
+	    		
+	    			
+	    		</p:column>
+	    		    		
+	    		<p:column style="text-align: center; width: 100px">
+	    			<p:button outcome="/clientes/CadastroCliente" icon="ui-icon-pencil" title="Editar">
+	    				<f:param name="cliente" value="#{cliente.id}" />
+	    			</p:button>  
+	    			
+	    			<p:commandButton icon="ui-icon-trash" title="Excluir" oncomplete="PF('confirmacaoExclusao').show()"
+	    					process="@this" update=":frmPesquisa:confirmacaoExclusaoDialog" 
+	    					disabled="#{not seguranca.excluirClientePermitido}">
+	    				<f:setPropertyActionListener target="#{pesquisaClientesBean.clienteSelecionado}" 
+	    					value="#{cliente}"  />
+	    			</p:commandButton>
+	    		</p:column>
+	    	</p:dataTable>
+	    	
+	    	<!--  mensagem nova com negrito -->
+	    	<p:confirmDialog header="Exclusão de Cliente" 
+	    		widgetVar="confirmacaoExclusao"	id="confirmacaoExclusaoDialog">
+	    		<f:facet name="message">
+	    			<h:outputFormat value="Tem certeza que deseja excluir o usuario: " escape="false"/>
+     				<h:outputFormat value="#{pesquisaClientesBean.clienteSelecionado.nome}" escape="false" style="font-weight:bold;color: red; "/>
+   				</f:facet>
+	    		
+	    		<p:button value="Não" onclick="PF('confirmacaoExclusao').hide(); return false;" />
+	    		<p:commandButton value="Sim" oncomplete="PF('confirmacaoExclusao').hide();"
+	    			action="#{pesquisaClientesBean.excluir}" process="@this"
+	    			update=":frmPesquisa:clientesTable" />
+	    	</p:confirmDialog>
+	    	
+	    	<!-- mensagem antiga removida -->
+	    	<ui:remove >
+	    	<p:confirmDialog header="Exclusão de Cliente" 
+	    		message="Tem certeza que deseja excluir o usuario #{pesquisaClientesBean.clienteSelecionado.nome}?"
+	    		widgetVar="confirmacaoExclusao"	id="confirmacaoExclusaoDialog">
+	    		<p:button value="Não" onclick="PF('confirmacaoExclusao').hide(); return false;" />
+	    		<p:commandButton value="Sim" oncomplete="PF('confirmacaoExclusao').hide();"
+	    			action="#{pesquisaClientesBean.excluir}" process="@this"
+	    			update=":frmPesquisa:clientesTable" />
+	    	</p:confirmDialog>
+	    	</ui:remove >
+	    	
+    	</h:form>
+    	
+    </ui:define>
+</ui:composition>
